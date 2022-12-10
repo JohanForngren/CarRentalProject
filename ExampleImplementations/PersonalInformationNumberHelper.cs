@@ -1,7 +1,7 @@
 ﻿using ActiveLogin.Identity.Swedish;
 using DomainLibrary.Helpers;
 
-namespace CarRentalTypes;
+namespace ExampleImplementations;
 
 public sealed class PersonalInformationNumberHelper : IPersonalInformationNumberHelper
 {

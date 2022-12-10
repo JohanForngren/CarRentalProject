@@ -1,6 +1,6 @@
 ﻿using DomainLibrary.CarRentalTypes;
 
-namespace CarRentalTypes;
+namespace ExampleImplementations;
 
 public sealed class DummyCarRentalTypesProvider : ICarRentalTypesProvider
 {

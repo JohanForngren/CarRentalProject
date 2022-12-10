@@ -1,6 +1,6 @@
-﻿using CarRentalTypes;
-using DomainLibrary.CarRentalPeriod.Models;
+﻿using DomainLibrary.CarRentalPeriod.Models;
 using DomainLibrary.CarRentalPrice;
+using ExampleImplementations;
 using Moq;
 
 namespace Tests.UnitTests;

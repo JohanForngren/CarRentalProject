@@ -2,7 +2,7 @@
 using DomainLibrary.CarRentalPeriod.Models;
 using DomainLibrary.CarRentalPrice;
 
-namespace CarRentalTypes;
+namespace ExampleImplementations;
 
 public sealed class CarRentalPriceService : ICarRentalPriceService
 {

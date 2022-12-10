@@ -1,8 +1,8 @@
-using CarRentalTypes;
 using DomainLibrary.CarRentalPeriod;
 using DomainLibrary.CarRentalPrice;
 using DomainLibrary.CarRentalTypes;
 using DomainLibrary.Helpers;
+using ExampleImplementations;
 
 namespace Tests.IntegrationTests;
 
