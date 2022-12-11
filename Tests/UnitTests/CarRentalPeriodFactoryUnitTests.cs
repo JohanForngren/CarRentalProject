@@ -42,12 +42,11 @@ public sealed class CarRentalPeriodFactoryUnitTests
     private const int TotalPriceInMinorCurrency = 123456789;
 
     [Test]
-    public void Invalid_car_rental_type_throws_KeyNotFoundException()
+    public void Non_existing_car_rental_type_throws_KeyNotFoundException()
     {
-        Assert.ThrowsAsync<KeyNotFoundException>(async () =>
-            await _sut.GetCarRentalPeriodStartedModelAsync(ValidTestCaseData.BookingNumber,
-                ValidTestCaseData.CarRegistrationNumber, ValidTestCaseData.PersonalIdentityNumber, "invalid",
-                ValidTestCaseData.OdometerAtStart, ValidTestCaseData.Now));
+        Assert.That(async () => await _sut.GetCarRentalPeriodStartedModelAsync(ValidTestCaseData.BookingNumber,
+            ValidTestCaseData.CarRegistrationNumber, ValidTestCaseData.PersonalIdentityNumber, "invalid",
+            ValidTestCaseData.OdometerAtStart, ValidTestCaseData.Now), Throws.TypeOf<KeyNotFoundException>());
     }
 
     [Test]

@@ -25,5 +25,7 @@ base.
 * Use async methods even when not strictly needed to simulate real world scenario
 
 # Batteries not included
+
 * Data is not cleaned, that is a implementation detail of calling methods.
-* Logging is not injected. It could easily be added for instance by using dependency injection or by wrapping the ICarRentalPeriodFactory in a logging controller or endpoint.
+* Logging is not injected. It could easily be added for instance by using dependency injection or by wrapping the
+  ICarRentalPeriodFactory in a logging controller or endpoint.

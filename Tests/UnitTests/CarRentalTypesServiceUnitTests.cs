@@ -31,6 +31,7 @@ public sealed class CarRentalTypesServiceUnitTests
     [Test]
     public void Non_existing_car_rental_type_throws_KeyNotFoundException()
     {
-        Assert.ThrowsAsync<KeyNotFoundException>(async () => await _sut.GetCarRentalTypePriceEquationAsync("invalid"));
+        Assert.That(async () => await _sut.GetCarRentalTypePriceEquationAsync("invalid"),
+            Throws.TypeOf<KeyNotFoundException>());
     }
 }
