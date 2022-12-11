@@ -19,23 +19,26 @@ public sealed class CarRentalPeriodFactory : ICarRentalPeriodFactory
     }
 
     public async Task<ICarRentalPeriodStartedModel> GetCarRentalPeriodStartedModelAsync(string bookingNumber,
-        string carRegistrationNumber,
-        string personalIdentityNumber, string carRentalType, int odometerAtStartOfRentalPeriod,
-        DateTime? timeStamp = null)
+        string carRegistrationNumber, string personalIdentityNumber, string carRentalType,
+        int odometerAtStartOfRentalPeriod,
+        DateTime startOfRentalPeriod)
     {
+        _carRentalPeriodValidationService.ValidateBookingNumber(bookingNumber);
+        _carRentalPeriodValidationService.ValidateCarRegistrationNumber(carRegistrationNumber);
+        _carRentalPeriodValidationService.ValidatePersonalInformationNumber(personalIdentityNumber);
+        _carRentalPeriodValidationService.ValidateOdometerAtStartOfRentalPeriod(odometerAtStartOfRentalPeriod);
+        _carRentalPeriodValidationService.ValidateTimeStamp(startOfRentalPeriod);
+
         // This will throw KeyNotFoundException if carRentalType is invalid, no need to validate it separately
         var carRentalPriceEquation = await _carRentalTypesService.GetCarRentalTypePriceEquationAsync(carRentalType);
 
         ICarRentalPeriodStartedModel carRentalPeriodStartedModel = new CarRentalPeriodStartedModel
         {
-            BookingNumber = _carRentalPeriodValidationService.ValidateBookingNumber(bookingNumber),
-            CarRegistrationNumber =
-                _carRentalPeriodValidationService.ValidateCarRegistrationNumber(carRegistrationNumber),
-            PersonalIdentityNumber =
-                _carRentalPeriodValidationService.ValidatePersonalInformationNumber(personalIdentityNumber),
-            DateTimeAtStartOfRentalPeriod = _carRentalPeriodValidationService.ValidateTimeStamp(timeStamp),
-            OdometerAtStartOfRentalPeriod =
-                _carRentalPeriodValidationService.ValidateOdometerAtStartOfRentalPeriod(odometerAtStartOfRentalPeriod),
+            BookingNumber = bookingNumber,
+            CarRegistrationNumber = carRegistrationNumber,
+            PersonalIdentityNumber = personalIdentityNumber,
+            StartOfRentalPeriod = startOfRentalPeriod,
+            OdometerAtStartOfRentalPeriod = odometerAtStartOfRentalPeriod,
             CarRentalType = carRentalType,
             CarRentalPriceEquation = carRentalPriceEquation,
             BaseRatePerDayInMinorCurrency = await _carRentalPriceService.GetBaseRatePerDayInMinorCurrencyAsync(),
@@ -45,17 +48,28 @@ public sealed class CarRentalPeriodFactory : ICarRentalPeriodFactory
         return carRentalPeriodStartedModel;
     }
 
+    public async Task<ICarRentalPeriodStartedModel> GetCarRentalPeriodStartedModelAsync(string bookingNumber,
+        string carRegistrationNumber,
+        string personalIdentityNumber, string carRentalType, int odometerAtStartOfRentalPeriod)
+    {
+        var startOfRentalPeriod = DateTime.Now;
+        return await GetCarRentalPeriodStartedModelAsync(bookingNumber,
+            carRegistrationNumber,
+            personalIdentityNumber, carRentalType, odometerAtStartOfRentalPeriod, startOfRentalPeriod);
+    }
+
     public Task<ICarRentalPeriodReturnedModel> GetCarRentalPeriodReturnedModelAsync(
-        ICarRentalPeriodStartedModel carRentalPeriodStartedModel, DateTime dateTimeAtEndOfRentalPeriod,
+        ICarRentalPeriodStartedModel carRentalPeriodStartedModel, DateTime endOfRentalPeriod,
         int odometerAtReturn)
     {
-        var totalRentalPeriodTimeSpan =
-            _carRentalPeriodValidationService.ValidateAndCalculateTotalRentalPeriodTimeSpan(
-                carRentalPeriodStartedModel.DateTimeAtStartOfRentalPeriod, dateTimeAtEndOfRentalPeriod);
+        _carRentalPeriodValidationService.ValidateRentalPeriodReturnTimeStamp(
+            carRentalPeriodStartedModel.StartOfRentalPeriod, endOfRentalPeriod);
+        var totalRentalPeriodTimeSpan = CalculateTotalRentalPeriod(carRentalPeriodStartedModel, endOfRentalPeriod);
 
+        _carRentalPeriodValidationService.ValidateOdometerAtReturnOfRentalPeriod(
+            carRentalPeriodStartedModel.OdometerAtStartOfRentalPeriod, odometerAtReturn);
         var totalRentalPeriodDistanceInKilometers =
-            _carRentalPeriodValidationService.ValidateAndCalculateTotalRentalPeriodDistanceInKilometers(
-                carRentalPeriodStartedModel.OdometerAtStartOfRentalPeriod, odometerAtReturn);
+            CalculateTotalRentalPeriodDistanceInKilometers(carRentalPeriodStartedModel, odometerAtReturn);
 
         var totalPriceInMinorCurrency = _carRentalPriceService.CalculateTotalPriceInMinorCurrency(
             carRentalPeriodStartedModel,
@@ -73,12 +87,28 @@ public sealed class CarRentalPeriodFactory : ICarRentalPeriodFactory
             PersonalIdentityNumber = carRentalPeriodStartedModel.PersonalIdentityNumber,
             CarRentalType = carRentalPeriodStartedModel.CarRentalType,
             CarRentalPriceEquation = carRentalPeriodStartedModel.CarRentalPriceEquation,
-            DateTimeAtStartOfRentalPeriod = carRentalPeriodStartedModel.DateTimeAtStartOfRentalPeriod,
+            StartOfRentalPeriod = carRentalPeriodStartedModel.StartOfRentalPeriod,
             OdometerAtStartOfRentalPeriod = carRentalPeriodStartedModel.OdometerAtStartOfRentalPeriod,
             BaseRatePerDayInMinorCurrency = carRentalPeriodStartedModel.BaseRatePerDayInMinorCurrency,
             BaseRatePerKilometerInMinorCurrency = carRentalPeriodStartedModel.BaseRatePerKilometerInMinorCurrency
         };
 
         return Task.FromResult(carRentalPeriodReturnedModel);
+    }
+
+    private static int CalculateTotalRentalPeriodDistanceInKilometers(
+        ICarRentalPeriodStartedModel carRentalPeriodStartedModel, int odometerAtReturn)
+    {
+        var totalRentalPeriodDistanceInKilometers =
+            odometerAtReturn - carRentalPeriodStartedModel.OdometerAtStartOfRentalPeriod;
+        return totalRentalPeriodDistanceInKilometers;
+    }
+
+    private static TimeSpan CalculateTotalRentalPeriod(ICarRentalPeriodStartedModel carRentalPeriodStartedModel,
+        DateTime endOfRentalPeriod)
+    {
+        var totalRentalPeriodTimeSpan =
+            endOfRentalPeriod - carRentalPeriodStartedModel.StartOfRentalPeriod;
+        return totalRentalPeriodTimeSpan;
     }
 }

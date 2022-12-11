@@ -29,33 +29,6 @@ public sealed class CarRentalPeriodFactoryUnitTests
                 It.IsAny<TimeSpan>(), It.IsAny<int>())).Returns(TotalPriceInMinorCurrency);
 
         var iCarRentalPeriodValidationServiceMock = new Mock<ICarRentalPeriodValidationService>();
-        iCarRentalPeriodValidationServiceMock.Setup(mock => mock.ValidateCarRegistrationNumber(It.IsAny<string>()))
-            .Returns<string>(value => value);
-        iCarRentalPeriodValidationServiceMock.Setup(mock => mock.ValidateBookingNumber(It.IsAny<string>()))
-            .Returns<string>(value => value);
-        iCarRentalPeriodValidationServiceMock.Setup(mock => mock.ValidatePersonalInformationNumber(It.IsAny<string>()))
-            .Returns<string>(value => value);
-        iCarRentalPeriodValidationServiceMock
-            .Setup(mock =>
-                mock.ValidateAndCalculateTotalRentalPeriodDistanceInKilometers(It.IsAny<int>(), It.IsAny<int>()))
-            .Returns((int odometerAtStart, int odometerAtReturn) => odometerAtReturn - odometerAtStart);
-        iCarRentalPeriodValidationServiceMock
-            .Setup(mock =>
-                mock.ValidateAndCalculateTotalRentalPeriodTimeSpan(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .Returns((DateTime dateTimeAtStartOfRentalPeriod, DateTime dateTimeAtEndOfRentalPeriod) =>
-                dateTimeAtEndOfRentalPeriod - dateTimeAtStartOfRentalPeriod);
-        iCarRentalPeriodValidationServiceMock.Setup(mock => mock.ValidateTimeStamp(It.IsAny<DateTime>()))
-            .Returns<DateTime>(value => value);
-        iCarRentalPeriodValidationServiceMock.Setup(mock => mock.ValidateOdometerAtStartOfRentalPeriod(It.IsAny<int>()))
-            .Returns<int>(value => value);
-        iCarRentalPeriodValidationServiceMock
-            .Setup(mock =>
-                mock.ValidateAndCalculateTotalRentalPeriodDistanceInKilometers(It.IsAny<int>(), It.IsAny<int>()))
-            .Returns((int odometerAtStart, int odometerAtReturn) => odometerAtReturn - odometerAtStart);
-        iCarRentalPeriodValidationServiceMock
-            .Setup(mock =>
-                mock.ValidateAndCalculateTotalRentalPeriodTimeSpan(It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-            .Returns((DateTime value1, DateTime value2) => value2 - value1);
 
         _sut =
             new CarRentalPeriodFactory(iCarRentalPeriodValidationServiceMock.Object, iCarRentalTypesServiceMock.Object,
@@ -88,7 +61,7 @@ public sealed class CarRentalPeriodFactoryUnitTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(model.DateTimeAtStartOfRentalPeriod, Is.EqualTo(ValidTestCaseData.Now));
+            Assert.That(model.StartOfRentalPeriod, Is.EqualTo(ValidTestCaseData.Now));
             Assert.That(model.BookingNumber, Is.EqualTo(ValidTestCaseData.BookingNumber));
             Assert.That(model.CarRegistrationNumber, Is.EqualTo(ValidTestCaseData.CarRegistrationNumber));
             Assert.That(model.PersonalIdentityNumber, Is.EqualTo(ValidTestCaseData.PersonalIdentityNumber));
@@ -121,7 +94,7 @@ public sealed class CarRentalPeriodFactoryUnitTests
                 Is.EqualTo(ValidTestCaseData.ExpectedTotalRentalPeriodDistanceInKilometers));
 
             // Mappings from GetCarRentalPeriodStartedModelAsync:
-            Assert.That(model.DateTimeAtStartOfRentalPeriod, Is.EqualTo(startTimeStamp));
+            Assert.That(model.StartOfRentalPeriod, Is.EqualTo(startTimeStamp));
             Assert.That(model.BookingNumber, Is.EqualTo(ValidTestCaseData.BookingNumber));
             Assert.That(model.CarRegistrationNumber, Is.EqualTo(ValidTestCaseData.CarRegistrationNumber));
             Assert.That(model.PersonalIdentityNumber, Is.EqualTo(ValidTestCaseData.PersonalIdentityNumber));
@@ -131,5 +104,16 @@ public sealed class CarRentalPeriodFactoryUnitTests
             Assert.That(model.BaseRatePerDayInMinorCurrency, Is.EqualTo(BaseRatePerDayInMinorCurrency));
             Assert.That(model.BaseRatePerKilometerInMinorCurrency, Is.EqualTo(BaseRatePerKilometerInMinorCurrency));
         });
+    }
+
+    [Test]
+    public async Task Start_of_rental_periods_is_set_to_now_if_timestamp_argument_is_null()
+    {
+        var model = await _sut.GetCarRentalPeriodStartedModelAsync(
+            ValidTestCaseData.BookingNumber,
+            ValidTestCaseData.CarRegistrationNumber,
+            ValidTestCaseData.PersonalIdentityNumber, ValidTestCaseData.CarRentalType,
+            ValidTestCaseData.OdometerAtStart);
+        Assert.That(() => model.StartOfRentalPeriod, Is.EqualTo(DateTime.Now).Within(1).Seconds);
     }
 }

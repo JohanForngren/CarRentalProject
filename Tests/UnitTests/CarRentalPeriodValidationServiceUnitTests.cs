@@ -24,117 +24,112 @@ public sealed class CarRentalPeriodValidationServiceUnitTests
     private ICarRentalPeriodValidationService _sut = null!;
 
     [Test]
-    public void Return_valid_personal_information_number()
+    public void Valid_personal_information_number_throws_no_exceptions()
     {
         Assert.That(() => _sut.ValidatePersonalInformationNumber(ValidPersonalInformationNumber),
-            Is.EqualTo(ValidPersonalInformationNumber));
+            Throws.Nothing);
     }
 
     [Test]
     public void Invalid_personal_information_number_throws_ArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => _sut.ValidatePersonalInformationNumber("invalid"));
+        Assert.That(() => _sut.ValidatePersonalInformationNumber("invalid"), Throws.ArgumentException);
     }
 
     [Test]
-    public void Return_valid_car_registration_number()
+    public void Valid_car_registration_number_throws_no_exceptions()
     {
         const string validArgument = "valid";
-        Assert.That(() => _sut.ValidateCarRegistrationNumber(validArgument), Is.EqualTo(validArgument));
+        Assert.That(() => _sut.ValidateCarRegistrationNumber(validArgument), Throws.Nothing);
     }
 
     [Test]
     public void Invalid_car_registration_number_throws_ArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => _sut.ValidateCarRegistrationNumber(""));
+        Assert.That(() => _sut.ValidateCarRegistrationNumber(""), Throws.ArgumentException);
     }
 
     [Test]
-    public void Return_valid_booking_number()
+    public void Valid_booking_number_throws_no_exceptions()
     {
         const string validArgument = "valid";
-        Assert.That(() => _sut.ValidateBookingNumber(validArgument), Is.EqualTo(validArgument));
+        Assert.That(() => _sut.ValidateBookingNumber(validArgument), Throws.Nothing);
     }
 
     [Test]
     public void Invalid_booking_number_throws_ArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => _sut.ValidateBookingNumber(""));
+        Assert.That(() => _sut.ValidateBookingNumber(""), Throws.ArgumentException);
     }
 
     [Test]
-    public void Return_valid_timestamp()
+    public void Valid_timestamp_throws_no_exceptions()
     {
-        Assert.That(() => _sut.ValidateTimeStamp(ValidTestCaseData.Now), Is.EqualTo(ValidTestCaseData.Now));
-    }
-
-    [Test]
-    public void Now_is_returned_if_timestamp_argument_is_null()
-    {
-        Assert.That(() => _sut.ValidateTimeStamp(null), Is.EqualTo(DateTime.Now).Within(1).Seconds);
+        Assert.That(() => _sut.ValidateTimeStamp(ValidTestCaseData.Now), Throws.Nothing);
     }
 
     [Test]
     public void Timestamps_in_the_future_throws_ArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => _sut.ValidateTimeStamp(ValidTestCaseData.Now.AddYears(1000)));
-        Assert.Throws<ArgumentException>(() =>
-            _sut.ValidateAndCalculateTotalRentalPeriodTimeSpan(ValidTestCaseData.Now,
-                ValidTestCaseData.Now.Add(TimeSpan.FromHours(1))));
+        Assert.Multiple(() =>
+        {
+            Assert.That(() => _sut.ValidateTimeStamp(ValidTestCaseData.Now.AddYears(1000)), Throws.ArgumentException);
+            Assert.That(() =>
+                _sut.ValidateRentalPeriodReturnTimeStamp(ValidTestCaseData.Now,
+                    ValidTestCaseData.Now.Add(TimeSpan.FromHours(1))), Throws.ArgumentException);
+        });
     }
 
     [Test]
-    public void Timespans_are_calculated()
+    public void Valid_return_timestamps_throws_no_exceptions()
     {
         Assert.That(
-            () => _sut.ValidateAndCalculateTotalRentalPeriodTimeSpan(
+            () => _sut.ValidateRentalPeriodReturnTimeStamp(
                 ValidTestCaseData.Now.Subtract(TimeSpan.FromHours(25)),
-                ValidTestCaseData.Now), Is.EqualTo(TimeSpan.FromHours(25)));
+                ValidTestCaseData.Now), Throws.Nothing);
     }
 
     [Test]
     public void Return_timestamp_not_later_than_start_timestamp_throws_ArgumentException()
     {
-        Assert.Throws<ArgumentException>(() =>
-            _sut.ValidateAndCalculateTotalRentalPeriodTimeSpan(ValidTestCaseData.Now, ValidTestCaseData.Now));
-        Assert.Throws<ArgumentException>(() =>
-            _sut.ValidateAndCalculateTotalRentalPeriodTimeSpan(ValidTestCaseData.Now,
-                ValidTestCaseData.Now.Subtract(TimeSpan.FromHours(1))));
-    }
-
-    [Test]
-    public void Total_rental_distances_in_kilometers_are_calculated()
-    {
-        const int validOdometerAtStart = 100;
-        const int validOdometerAtReturn = 100;
         Assert.Multiple(() =>
         {
-            Assert.That(
-                () => _sut.ValidateAndCalculateTotalRentalPeriodDistanceInKilometers(validOdometerAtStart,
-                    validOdometerAtReturn), Is.EqualTo(validOdometerAtReturn - validOdometerAtStart));
-            Assert.That(
-                () => _sut.ValidateAndCalculateTotalRentalPeriodDistanceInKilometers(validOdometerAtStart,
-                    validOdometerAtReturn + 100), Is.EqualTo(validOdometerAtReturn - validOdometerAtStart + 100));
+            Assert.That(() =>
+                    _sut.ValidateRentalPeriodReturnTimeStamp(ValidTestCaseData.Now, ValidTestCaseData.Now),
+                Throws.ArgumentException);
+            Assert.That(() =>
+                _sut.ValidateRentalPeriodReturnTimeStamp(ValidTestCaseData.Now,
+                    ValidTestCaseData.Now.Subtract(TimeSpan.FromHours(1))), Throws.ArgumentException);
         });
     }
 
     [Test]
-    public void Odometer_return_value_is_smaller_than_start_value_throws_ArgumentException()
+    [TestCase(100, 200)]
+    [TestCase(100, 100)]
+    public void Valid_return_odometer_value_throws_no_exceptions(int validOdometerAtStart, int validOdometerAtReturn)
     {
-        Assert.Throws<ArgumentException>(() =>
-            _sut.ValidateAndCalculateTotalRentalPeriodDistanceInKilometers(200, 100));
+        Assert.That(
+            () => _sut.ValidateOdometerAtReturnOfRentalPeriod(validOdometerAtStart,
+                validOdometerAtReturn), Throws.Nothing);
     }
 
     [Test]
-    public void Return_valid_odometer_value_at_start_of_rental_period()
+    public void Odometer_Value_is_smaller_than_start_value_throws_ArgumentException()
+    {
+        Assert.That(() =>
+            _sut.ValidateOdometerAtReturnOfRentalPeriod(200, 100), Throws.ArgumentException);
+    }
+
+    [Test]
+    public void Valid_odometer_value_at_start_of_rental_period()
     {
         const int validArgument = 100;
-        Assert.That(() => _sut.ValidateOdometerAtStartOfRentalPeriod(validArgument), Is.EqualTo(validArgument));
+        Assert.That(() => _sut.ValidateOdometerAtStartOfRentalPeriod(validArgument), Throws.Nothing);
     }
 
     [Test]
     public void Negative_odometer_start_value_throws_ArgumentException()
     {
-        Assert.Throws<ArgumentException>(() => _sut.ValidateOdometerAtStartOfRentalPeriod(-1));
+        Assert.That(() => _sut.ValidateOdometerAtStartOfRentalPeriod(-1), Throws.ArgumentException);
     }
 }

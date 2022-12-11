@@ -2,16 +2,11 @@
 
 public interface ICarRentalPeriodValidationService
 {
-    string ValidatePersonalInformationNumber(string personalIdentityNumber);
-    string ValidateCarRegistrationNumber(string carRegistrationNumber);
-    string ValidateBookingNumber(string bookingNumber);
-
-    /// <returns>DateTime.Now if timeStamp == null </returns>
-    DateTime ValidateTimeStamp(DateTime? timeStamp);
-
-    TimeSpan ValidateAndCalculateTotalRentalPeriodTimeSpan(DateTime dateTimeAtStartOfRentalPeriod,
-        DateTime dateTimeAtEndOfRentalPeriod);
-
-    int ValidateAndCalculateTotalRentalPeriodDistanceInKilometers(int odometerAtStart, int odometerAtReturn);
-    int ValidateOdometerAtStartOfRentalPeriod(int odometerAtStartOfRentalPeriod);
+    void ValidateBookingNumber(string bookingNumber);
+    void ValidateCarRegistrationNumber(string carRegistrationNumber);
+    void ValidateOdometerAtReturnOfRentalPeriod(int odometerAtStart, int odometerAtReturn);
+    void ValidateOdometerAtStartOfRentalPeriod(int odometerAtStartOfRentalPeriod);
+    void ValidatePersonalInformationNumber(string personalIdentityNumber);
+    void ValidateRentalPeriodReturnTimeStamp(DateTime rentalPeriodStart, DateTime rentalPeriodStartEnd);
+    void ValidateTimeStamp(DateTime timeStamp);
 }

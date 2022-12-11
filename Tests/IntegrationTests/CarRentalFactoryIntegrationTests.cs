@@ -32,7 +32,7 @@ public sealed partial class CarRentalFactoryIntegrationTests
     [Test]
     [TestCaseSource(nameof(_invalidArgumentTestCases))]
     public void Invalid_argument_throws_ArgumentException(string bookingNumber, string carRegistrationNumber,
-        string personalIdentityNumber, string carRentalType, int odometer, DateTime? timeStamp = null)
+        string personalIdentityNumber, string carRentalType, int odometer, DateTime timeStamp)
     {
         Assert.That(
             () => _sut.GetCarRentalPeriodStartedModelAsync(bookingNumber, carRegistrationNumber,
@@ -64,7 +64,7 @@ public sealed partial class CarRentalFactoryIntegrationTests
             expectedTotalPriceFunction(baseRatePerDayInMinorCurrency, baseRatePerKilometerInMinorCurrency);
         Assert.Multiple(() =>
         {
-            Assert.That(carRentalPeriodReturnedModel.DateTimeAtStartOfRentalPeriod,
+            Assert.That(carRentalPeriodReturnedModel.StartOfRentalPeriod,
                 Is.EqualTo(ValidTestCaseData.TimeStampAtStart));
             Assert.That(carRentalPeriodReturnedModel.BookingNumber, Is.EqualTo(ValidTestCaseData.BookingNumber));
             Assert.That(carRentalPeriodReturnedModel.CarRegistrationNumber,

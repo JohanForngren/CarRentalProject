@@ -6,7 +6,7 @@ public abstract class CarRentalPeriodBaseModel : ICarRentalPeriodBaseModel
     public required string CarRegistrationNumber { get; init; }
     public required string PersonalIdentityNumber { get; init; }
     public required string CarRentalType { get; init; }
-    public required DateTime DateTimeAtStartOfRentalPeriod { get; init; }
+    public required DateTime StartOfRentalPeriod { get; init; }
     public int OdometerAtStartOfRentalPeriod { get; init; }
     public required string CarRentalPriceEquation { get; init; }
     public required int BaseRatePerDayInMinorCurrency { get; init; }

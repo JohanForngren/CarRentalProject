@@ -6,7 +6,7 @@ public interface ICarRentalPeriodBaseModel
     string CarRegistrationNumber { get; init; }
     string PersonalIdentityNumber { get; init; }
     string CarRentalType { get; init; }
-    DateTime DateTimeAtStartOfRentalPeriod { get; init; }
+    DateTime StartOfRentalPeriod { get; init; }
     int OdometerAtStartOfRentalPeriod { get; init; }
     string CarRentalPriceEquation { get; init; }
 
