@@ -6,11 +6,11 @@ namespace ExampleImplementations;
 
 public sealed class CarRentalPriceService : ICarRentalPriceService
 {
-    public int CalculateTotalPriceInMinorCurrency(ICarRentalPeriodBaseModel carRentalPeriodBaseModel,
+    public int CalculateTotalPriceInMinorCurrency(ICarRentalPeriodStartedModel carRentalPeriodStartedModel,
         TimeSpan totalRentalPeriodTimeSpan,
         int totalRentalPeriodDistanceInKilometers)
     {
-        Entity entity = carRentalPeriodBaseModel.CarRentalPriceEquation;
+        Entity entity = carRentalPeriodStartedModel.CarRentalPriceEquation;
 
         // This implementation assumes that we want to charge by fractional days
         // If started days is desired, just use Math.Ceiling() on TotalDays
@@ -18,9 +18,9 @@ public sealed class CarRentalPriceService : ICarRentalPriceService
 
         // ReSharper disable StringLiteralTypo
         var minorPrice = entity
-            .Substitute("basDygnsHyra", carRentalPeriodBaseModel.BaseRatePerDayInMinorCurrency)
+            .Substitute("basDygnsHyra", carRentalPeriodStartedModel.BaseRatePerDayInMinorCurrency)
             .Substitute("antalDygn", totalDaysFractional)
-            .Substitute("basKmPris", carRentalPeriodBaseModel.BaseRatePerKilometerInMinorCurrency)
+            .Substitute("basKmPris", carRentalPeriodStartedModel.BaseRatePerKilometerInMinorCurrency)
             .Substitute("antalKm", totalRentalPeriodDistanceInKilometers)
             .EvalNumerical();
         // ReSharper restore StringLiteralTypo

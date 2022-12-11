@@ -4,7 +4,7 @@ namespace DomainLibrary.CarRentalPrice;
 
 public interface ICarRentalPriceService
 {
-    public int CalculateTotalPriceInMinorCurrency(ICarRentalPeriodBaseModel carRentalPeriodBaseModel,
+    public int CalculateTotalPriceInMinorCurrency(ICarRentalPeriodStartedModel carRentalPeriodStartedModel,
         TimeSpan totalRentalPeriodTimeSpan,
         int totalRentalPeriodDistanceInKilometers);
 

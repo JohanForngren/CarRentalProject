@@ -25,7 +25,7 @@ public sealed class CarRentalPeriodFactoryUnitTests
         iCarRentalPriceServiceMock.Setup(mock => mock.GetBaseRatePerKilometerInMinorCurrencyAsync())
             .ReturnsAsync(BaseRatePerKilometerInMinorCurrency);
         iCarRentalPriceServiceMock
-            .Setup(mock => mock.CalculateTotalPriceInMinorCurrency(It.IsAny<CarRentalPeriodStartedModel>(),
+            .Setup(mock => mock.CalculateTotalPriceInMinorCurrency(It.IsAny<ICarRentalPeriodStartedModel>(),
                 It.IsAny<TimeSpan>(), It.IsAny<int>())).Returns(TotalPriceInMinorCurrency);
 
         var iCarRentalPeriodValidationServiceMock = new Mock<ICarRentalPeriodValidationService>();

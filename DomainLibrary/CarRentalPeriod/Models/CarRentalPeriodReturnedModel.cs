@@ -1,6 +1,6 @@
 ﻿namespace DomainLibrary.CarRentalPeriod.Models;
 
-public class CarRentalPeriodReturnedModel : CarRentalPeriodBaseModel
+public sealed class CarRentalPeriodReturnedModel : CarRentalPeriodBaseModel, ICarRentalPeriodReturnedModel
 {
     public required TimeSpan TotalRentalPeriodTimeSpan { get; init; }
     public required int TotalRentalPeriodDistanceInKilometers { get; init; }

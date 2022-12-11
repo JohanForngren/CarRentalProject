@@ -1,5 +1,5 @@
 ﻿namespace DomainLibrary.CarRentalPeriod.Models;
 
-public class CarRentalPeriodStartedModel : CarRentalPeriodBaseModel
+public sealed class CarRentalPeriodStartedModel : CarRentalPeriodBaseModel, ICarRentalPeriodStartedModel
 {
 }

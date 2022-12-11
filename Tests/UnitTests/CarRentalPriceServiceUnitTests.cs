@@ -22,7 +22,7 @@ public class CarRentalPriceServiceUnitTests
             ValidTestCaseData.BaseRatePerDayInMinorCurrency * totalRentalPeriodTimeSpan.TotalDays * 1.5 +
             ValidTestCaseData.BaseRatePerKilometerInMinorCurrency * totalRentalPeriodDistanceInKilometers * 1.5);
 
-        var carRentalPeriodStartedModel = new Mock<ICarRentalPeriodBaseModel>();
+        var carRentalPeriodStartedModel = new Mock<ICarRentalPeriodStartedModel>();
         carRentalPeriodStartedModel.SetupGet(mock => mock.BaseRatePerDayInMinorCurrency)
             .Returns(ValidTestCaseData.BaseRatePerDayInMinorCurrency);
         carRentalPeriodStartedModel.SetupGet(mock => mock.BaseRatePerKilometerInMinorCurrency)

@@ -18,7 +18,7 @@ public sealed class CarRentalPeriodFactory : ICarRentalPeriodFactory
         _carRentalPriceService = carRentalPriceService;
     }
 
-    public async Task<CarRentalPeriodStartedModel> GetCarRentalPeriodStartedModelAsync(string bookingNumber,
+    public async Task<ICarRentalPeriodStartedModel> GetCarRentalPeriodStartedModelAsync(string bookingNumber,
         string carRegistrationNumber,
         string personalIdentityNumber, string carRentalType, int odometerAtStartOfRentalPeriod,
         DateTime? timeStamp = null)
@@ -26,7 +26,7 @@ public sealed class CarRentalPeriodFactory : ICarRentalPeriodFactory
         // This will throw KeyNotFoundException if carRentalType is invalid, no need to validate it separately
         var carRentalPriceEquation = await _carRentalTypesService.GetCarRentalTypePriceEquationAsync(carRentalType);
 
-        var carRentalPeriodStartedModel = new CarRentalPeriodStartedModel
+        ICarRentalPeriodStartedModel carRentalPeriodStartedModel = new CarRentalPeriodStartedModel
         {
             BookingNumber = _carRentalPeriodValidationService.ValidateBookingNumber(bookingNumber),
             CarRegistrationNumber =
@@ -45,8 +45,8 @@ public sealed class CarRentalPeriodFactory : ICarRentalPeriodFactory
         return carRentalPeriodStartedModel;
     }
 
-    public Task<CarRentalPeriodReturnedModel> GetCarRentalPeriodReturnedModelAsync(
-        CarRentalPeriodStartedModel carRentalPeriodStartedModel, DateTime dateTimeAtEndOfRentalPeriod,
+    public Task<ICarRentalPeriodReturnedModel> GetCarRentalPeriodReturnedModelAsync(
+        ICarRentalPeriodStartedModel carRentalPeriodStartedModel, DateTime dateTimeAtEndOfRentalPeriod,
         int odometerAtReturn)
     {
         var totalRentalPeriodTimeSpan =
@@ -61,7 +61,7 @@ public sealed class CarRentalPeriodFactory : ICarRentalPeriodFactory
             carRentalPeriodStartedModel,
             totalRentalPeriodTimeSpan, totalRentalPeriodDistanceInKilometers);
 
-        CarRentalPeriodReturnedModel carRentalPeriodReturnedModel = new()
+        ICarRentalPeriodReturnedModel carRentalPeriodReturnedModel = new CarRentalPeriodReturnedModel
         {
             TotalRentalPeriodTimeSpan = totalRentalPeriodTimeSpan,
             TotalRentalPeriodDistanceInKilometers = totalRentalPeriodDistanceInKilometers,
