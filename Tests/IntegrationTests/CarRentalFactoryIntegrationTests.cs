@@ -86,4 +86,15 @@ public sealed partial class CarRentalFactoryIntegrationTests
             Assert.That(carRentalPeriodReturnedModel.TotalPriceInMinorCurrency, Is.EqualTo(expectedTotalPrice));
         });
     }
+
+    [Test]
+    public void Non_existing_car_rental_type_throws_KeyNotFoundException()
+    {
+        Assert.That(
+            () => _sut.GetCarRentalPeriodStartedModelAsync(ValidTestCaseData.BookingNumber,
+                ValidTestCaseData.CarRegistrationNumber,
+                ValidTestCaseData.PersonalIdentityNumber,
+                "non-existing", ValidTestCaseData.OdometerAtStart, ValidTestCaseData.TimeStampAtStart),
+            Throws.TypeOf<KeyNotFoundException>());
+    }
 }

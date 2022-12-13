@@ -23,9 +23,15 @@ base.
   price
 * Use minor currency to avoid rounding errors
 * Use async methods even when not strictly needed to simulate real world scenario
+* No null nowhere to be found
 
 # Batteries not included
 
 * Data is not cleaned, that is a implementation detail of calling methods.
 * Logging is not injected. It could easily be added for instance by using dependency injection or by wrapping the
   ICarRentalPeriodFactory in a logging controller or endpoint.
+
+# Potential improvements
+
+* Pricing is coupled to the business logic, and the the entire could base could be decoupled into feature-based
+  interfaces.
